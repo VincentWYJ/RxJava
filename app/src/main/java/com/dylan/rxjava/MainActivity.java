@@ -15,6 +15,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 //    @BindView(R.id.image)
 //    public ImageView mImage;
 
+    private int mIdIcLeft = R.drawable.ic_left;
+    private int mIdIcRight = R.drawable.ic_right;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         loadImageByThread();
-        loadImageByRxJava();
+        loadImageByRxJava2();
     }
 
     private void loadImageByThread() {
@@ -40,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void run() {
-                final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_left);
+                final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcLeft);
                 MainActivity.this.runOnUiThread(new Runnable() {
 
                     @Override
@@ -57,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void call(Subscriber<? super Bitmap> subscriber) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_right);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcRight);
                 subscriber.onNext(bitmap);
             }
         })
@@ -71,11 +77,46 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCompleted() {}
+            public void onCompleted() {
+
+            }
 
             @Override
             public void onError(Throwable e) {
                 Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadImageByRxJava2() {
+        Observable.from(new Integer[]{mIdIcRight})
+        .map(new Func1<Integer, Bitmap>() {
+
+            @Override
+            public Bitmap call(Integer idIcRight) {
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), idIcRight);
+                return bitmap;
+            }
+        })
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Action1<Bitmap>() {  //onNext
+
+            @Override
+            public void call(Bitmap bitmap) {
+                mImageList.get(1).setImageBitmap(bitmap);
+            }
+        }, new Action1<Throwable>() {  //onNError
+
+            @Override
+            public void call(Throwable e) {
+                Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+            }
+        }, new Action0() {  //onComplete
+
+            @Override
+            public void call() {
+
             }
         });
     }
