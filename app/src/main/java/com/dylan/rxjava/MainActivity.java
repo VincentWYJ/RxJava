@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import rx.Observable;
@@ -21,13 +22,16 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-    /** 多个一起绑定的时候是以列表的形式，控件修饰符不能为private或static */
-    @BindViews({R.id.image_left, R.id.image_right})
-    public List<ImageView> mImageList ;
-//    @BindView(R.id.image)
-//    public ImageView mImage;
+    @BindViews({R.id.image_left, R.id.image_middle, R.id.image_right})
+    public List<ImageView> mImageList;
+
+    @BindView(R.id.image_left)
+    public ImageView mImageLeft;
+
+    private ImageView mImageRight;
 
     private int mIdIcLeft = R.drawable.ic_left;
+    private int mIdIcMiddle = R.drawable.ic_middle;
     private int mIdIcRight = R.drawable.ic_right;
 
     @Override
@@ -37,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        mImageRight = (ImageView) findViewById(R.id.image_right);
+
         loadImageByThread();
+        loadImageByRxJava();
         loadImageByRxJava2();
     }
 
@@ -51,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void run() {
-                        mImageList.get(0).setImageBitmap(bitmap);
+                        mImageLeft.setImageBitmap(bitmap);
                     }
                 });
             }
@@ -63,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void call(Subscriber<? super Bitmap> subscriber) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcRight);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcMiddle);
                 subscriber.onNext(bitmap);
                 subscriber.onCompleted();
             }
@@ -105,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void call(Bitmap bitmap) {
-                mImageList.get(1).setImageBitmap(bitmap);
+                mImageRight.setImageBitmap(bitmap);
             }
-        }, new Action1<Throwable>() {  //onNError
+        }, new Action1<Throwable>() {  //onError
 
             @Override
             public void call(Throwable e) {
