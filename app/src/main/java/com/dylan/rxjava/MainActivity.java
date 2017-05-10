@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             public void call(Subscriber<? super Bitmap> subscriber) {
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcRight);
                 subscriber.onNext(bitmap);
+                subscriber.onCompleted();
             }
         })
         .subscribeOn(Schedulers.io())
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCompleted() {
-
+                Toast.makeText(MainActivity.this, "Complete!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void call() {
-
+                Toast.makeText(MainActivity.this, "Complete!", Toast.LENGTH_SHORT).show();
             }
         });
     }
