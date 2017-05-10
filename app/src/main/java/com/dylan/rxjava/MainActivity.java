@@ -30,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageRight;
 
-    private int mIdIcLeft = R.drawable.ic_left;
-    private int mIdIcMiddle = R.drawable.ic_middle;
-    private int mIdIcRight = R.drawable.ic_right;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mImageRight = (ImageView) findViewById(R.id.image_right);
 
         loadImageByThread();
-        loadImageByRxJava();
+        loadImageByRxJava1();
         loadImageByRxJava2();
     }
 
@@ -53,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void run() {
-                final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcLeft);
+                final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_left);
                 MainActivity.this.runOnUiThread(new Runnable() {
 
                     @Override
@@ -65,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    private void loadImageByRxJava() {
+    private void loadImageByRxJava1() {
         Observable.create(new Observable.OnSubscribe<Bitmap>() {
 
             @Override
             public void call(Subscriber<? super Bitmap> subscriber) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mIdIcMiddle);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_middle);
                 subscriber.onNext(bitmap);
                 subscriber.onCompleted();
             }
@@ -97,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadImageByRxJava2() {
-        Observable.from(new Integer[]{mIdIcRight})
+        Observable.from(new Integer[]{R.drawable.ic_right})
         .map(new Func1<Integer, Bitmap>() {
 
             @Override
